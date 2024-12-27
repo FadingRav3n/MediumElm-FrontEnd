@@ -53,8 +53,9 @@
       <el-tabs v-model="activeName" class="pl-0.5em pr-0.5em">
         <el-tab-pane label="点餐" name="first">
           <el-tabs :tab-position="tabPosition" class="h-66vh" type="border-card" v-model="merchandiseactiveName">
-            <el-tab-pane v-for="(item,idx) in menuInfo" :key="idx" :label="item.title" :name="item.id">
-              <div v-for="(item_,idx) in merchaniseData" :key="idx" class="w-full h-6em flex justify-around items-center shadow">
+            <el-tab-pane v-for="(item, idx) in menuInfo" :key="idx" :label="item.title" :name="item.id">
+              <div v-for="(item_, idx) in merchaniseData" :key="idx"
+                class="w-full h-6em flex justify-around items-center shadow">
                 <div class="w-35% h-full flex justify-center items-center">
                   <img :src="item_.icon" alt="" class="w-full">
                 </div>
@@ -66,8 +67,23 @@
                       <h3 class="text-0.7em text-red">￥</h3>
                       <h2 class="text-0.9em text-red">{{ item_.cost }}</h2>
                     </div>
-                    <div class="box-border pr-1em">
-                      <el-icon><i class="text-blue text-1.1em"><CirclePlusFilled></CirclePlusFilled></i></el-icon>
+                    <div v-if="!cartItems.some(cartItem => cartItem.id === item_.id)">
+                      <div class="box-border pr-1em z-10" @click="addToCart(item_)">
+                        <el-icon><i class="text-blue text-1.1em">
+                            <Plus></Plus>
+                          </i></el-icon>
+                      </div>
+                    </div>
+                    <div v-else class="w-40%">
+                      <div class="box-border pr-1em z-10 flex justify-around items-center">
+                        <el-icon @click="delFromCart(item_)"><i class="text-blue text-1.0em">
+                            <Minus></Minus>
+                          </i></el-icon>
+                        <p class="text-0.8em ml-0.3em mr-0.3em">{{ getQuantity(item_.id) }}</p>
+                        <el-icon @click="addToCart(item_)"><i class="text-blue text-1.0em">
+                            <Plus></Plus>
+                          </i></el-icon>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -82,26 +98,34 @@
         </el-tab-pane>
       </el-tabs>
     </div>
-    <CartComp></CartComp>
+    <CartComp :cartItems="cartItems" :deliveryFee="merchantInfo.deliveryFee" :deliveryStart="merchantInfo.deliveryStart"
+      :merchantId="merchantInfo.id"></CartComp>
   </div>
 </template>
 <script lang="ts" setup>
 import { base_url } from '@/util/const';
-import { ArrowLeft, Search, Message, Star, More,CirclePlusFilled } from '@element-plus/icons-vue';
+import { ArrowLeft, Search, Message, Star, More, Plus, Minus } from '@element-plus/icons-vue';
 import axios from 'axios';
-import { onBeforeMount, ref, watch } from 'vue';
+import { onBeforeMount, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import type { TabsInstance } from 'element-plus'
 import CartComp from '@/components/CartComp.vue';
 const tabPosition = ref<TabsInstance['tabPosition']>('left')
+const merchandiseactiveName = ref('')
 onBeforeMount(async () => {
   await getMerchantInfo()
+  console.log(merchantInfo.value)
   await getMenus()
+  console.log(menuInfo.value)
   merchandiseactiveName.value = menuInfo.value[0].id
+  console.log(merchandiseactiveName.value)
   await fetchMerchandises(merchandiseactiveName.value);
+  console.log(merchaniseData.value)
+})
+onMounted(async () => {
+
 })
 const activeName = ref('first')
-const merchandiseactiveName = ref('')
 
 const props = defineProps({
   mid: { type: String, required: true }
@@ -128,8 +152,9 @@ const router = useRouter()
 const back = () => {
   router.back()
 }
-const fetchMerchandises = async(id:string)=>{
-  await axios.get(base_url+`/api/merchandises/${id}`).then((resp)=>{
+const fetchMerchandises = async (id: string) => {
+  console.log(id)
+  await axios.get(base_url + `/api/merchandises/${id}`).then((resp) => {
     merchaniseData.value = resp.data
   })
 }
@@ -139,6 +164,41 @@ watch(merchandiseactiveName, async (newVal, oldVal) => {
     await fetchMerchandises(newVal); // 每次切换菜单时获取对应商品
   }
 });
+
+
+const cartItems = ref(JSON.parse(sessionStorage.getItem(`cart_${props.mid}`) || '[]'));
+
+const saveCartItems = () => {
+  console.log("ok")
+  sessionStorage.setItem(`cart_${props.mid}`, JSON.stringify(cartItems.value));
+  console.log(JSON.parse(sessionStorage.getItem(`cart_${props.mid}`)))
+};
+const addToCart = (item: any) => {
+  const existingItem = cartItems.value.find(cartItem => cartItem.id === item.id);
+  if (existingItem) {
+    existingItem.quantity += 1;
+  } else {
+    cartItems.value.push({ ...item, quantity: 1 });
+  }
+  saveCartItems();
+};
+
+const delFromCart = (item: any) => {
+  const existingItem = cartItems.value.find(cartItem => cartItem.id === item.id);
+  if (existingItem) {
+    if (existingItem.quantity > 1) {
+      existingItem.quantity -= 1;
+    } else {
+      // 如果商品数量为1，直接从购物车中移除该商品
+      cartItems.value = cartItems.value.filter(cartItem => cartItem.id !== item.id);
+    }
+  }
+  saveCartItems(); // 更新sessionStorage
+};
+
+const getQuantity = (id: string) => {
+  const item = cartItems.value.find(item => item.id === id);
+  return item ? item.quantity : 0; // 如果找不到商品，则返回 0
+};
 </script>
-<style scoped>
-</style>
+<style scoped></style>
