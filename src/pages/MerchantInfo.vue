@@ -26,19 +26,20 @@
         <div class="border-rd-1em shadow-md h-8em w-full box-border p-1em bg-white">
           <div class="flex justify-between">
             <div class="w-60%">
-              <h2 class="text-1.3em">{{ merchantInfo.name }}</h2>
-              <div class="flex">
-                <div>
-                  <p>评分</p>
-                  <h3>{{ merchantInfo.rate }}</h3>
+              <h2 class="text-1.3em mb-0.3em">{{ merchantInfo.name }}</h2>
+              <div class="flex justify-start">
+                <div class="w-4em">
+                  <p class="text-0.8em text-#666">评分</p>
+                  <h3 class="text-0.8em">{{ merchantInfo.rate }}</h3>
                 </div>
-                <div>
-                  <p>月售</p>
-                  <h3>{{ merchantInfo.soldout }}</h3>
+                <div class="w-4em">
+                  <p class="text-0.8em text-#666">月售</p>
+                  <h3 class="text-0.8em">{{ merchantInfo.soldout }}</h3>
                 </div>
-                <div>
-                  <p>蜂鸟准时达</p>
-                  <h3></h3>
+                <div class="w-5em">
+                  <p class="text-0.8em text-#666">蜂鸟准时达</p>
+                  <h3 class="text-0.8em">{{ merchantInfo.distance }}km
+                  </h3>
                 </div>
               </div>
             </div>
@@ -49,47 +50,49 @@
         </div>
       </div>
     </header>
-    <div class="w-full 100% box-border">
-      <el-tabs v-model="activeName" class="pl-0.5em pr-0.5em">
+    <div class="outer-tab">
+      <el-tabs v-model="activeName">
         <el-tab-pane label="点餐" name="first">
-          <el-tabs :tab-position="tabPosition" class="h-66vh" type="border-card" v-model="merchandiseactiveName">
-            <el-tab-pane v-for="(item, idx) in menuInfo" :key="idx" :label="item.title" :name="item.id">
-              <div v-for="(item_, idx) in merchaniseData" :key="idx"
-                class="w-full h-6em flex justify-around items-center shadow">
-                <div class="w-35% h-full flex justify-center items-center">
-                  <img :src="item_.icon" alt="" class="w-full">
-                </div>
-                <div class="w-65% h-full box-border pt-0.5em">
-                  <h3 class="text-1em">{{ item_.name }}</h3>
-                  <p class="text-#666 text-0.8em box-border pt-1em">已售{{ item_.soldout }}</p>
-                  <div class="flex w-full justify-between items-center">
-                    <div class="flex justify-center items-center">
-                      <h3 class="text-0.7em text-red">￥</h3>
-                      <h2 class="text-0.9em text-red">{{ item_.cost }}</h2>
-                    </div>
-                    <div v-if="!cartItems.some(cartItem => cartItem.id === item_.id)">
-                      <div class="box-border pr-1em z-10" @click="addToCart(item_)">
-                        <el-icon><i class="text-blue text-1.1em">
-                            <Plus></Plus>
-                          </i></el-icon>
+          <div class="inner-tab">
+            <el-tabs :tab-position="tabPosition" class="h-66vh" type="border-card" v-model="merchandiseactiveName">
+              <el-tab-pane v-for="(item, idx) in menuInfo" :key="idx" :label="item.title" :name="item.id">
+                <div v-for="(item_, idx) in merchaniseData" :key="idx"
+                  class="w-full h-6em flex justify-around items-center shadow">
+                  <div class="w-35% h-full flex justify-center items-center">
+                    <img :src="item_.icon" alt="" class="w-full">
+                  </div>
+                  <div class="w-65% h-full box-border pt-0.5em">
+                    <h3 class="text-1em">{{ item_.name }}</h3>
+                    <p class="text-#666 text-0.8em box-border pt-1em">已售{{ item_.soldout }}</p>
+                    <div class="flex w-full justify-between items-center">
+                      <div class="flex justify-center items-center">
+                        <h3 class="text-0.7em text-red">￥</h3>
+                        <h2 class="text-0.9em text-red">{{ item_.cost }}</h2>
                       </div>
-                    </div>
-                    <div v-else class="w-40%">
-                      <div class="box-border pr-1em z-10 flex justify-around items-center">
-                        <el-icon @click="delFromCart(item_)"><i class="text-blue text-1.0em">
-                            <Minus></Minus>
-                          </i></el-icon>
-                        <p class="text-0.8em ml-0.3em mr-0.3em">{{ getQuantity(item_.id) }}</p>
-                        <el-icon @click="addToCart(item_)"><i class="text-blue text-1.0em">
-                            <Plus></Plus>
-                          </i></el-icon>
+                      <div v-if="!cartItems.some(cartItem => cartItem.id === item_.id)">
+                        <div class="box-border pr-1em z-10" @click="addToCart(item_)">
+                          <el-icon><i class="text-blue text-1.1em">
+                              <Plus></Plus>
+                            </i></el-icon>
+                        </div>
+                      </div>
+                      <div v-else class="w-40%">
+                        <div class="box-border pr-1em z-10 flex justify-around items-center">
+                          <el-icon @click="delFromCart(item_)"><i class="text-blue text-1.0em">
+                              <Minus></Minus>
+                            </i></el-icon>
+                          <p class="text-0.8em ml-0.3em mr-0.3em">{{ getQuantity(item_.id) }}</p>
+                          <el-icon @click="addToCart(item_)"><i class="text-blue text-1.0em">
+                              <Plus></Plus>
+                            </i></el-icon>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </el-tab-pane>
-          </el-tabs>
+              </el-tab-pane>
+            </el-tabs>
+          </div>
 
         </el-tab-pane>
         <el-tab-pane label="评价" name="second"></el-tab-pane>
@@ -201,4 +204,18 @@ const getQuantity = (id: string) => {
   return item ? item.quantity : 0; // 如果找不到商品，则返回 0
 };
 </script>
-<style scoped></style>
+<style scoped>
+.inner-tab :deep(.el-tabs__item){
+  height:4em;
+  border: none;
+}
+
+.inner-tab :deep(.el-tabs__content){
+  padding:0;
+}
+.outer-tab{
+  width: 100%;
+  box-sizing: border-box;
+}
+
+</style>
