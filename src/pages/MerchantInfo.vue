@@ -172,10 +172,18 @@ watch(merchandiseactiveName, async (newVal, oldVal) => {
 const cartItems = ref(JSON.parse(sessionStorage.getItem(`cart_${props.mid}`) || '[]'));
 
 const saveCartItems = () => {
-  console.log("ok")
-  sessionStorage.setItem(`cart_${props.mid}`, JSON.stringify(cartItems.value));
-  console.log(JSON.parse(sessionStorage.getItem(`cart_${props.mid}`)))
+  console.log("Saving cart items...");
+  // 在保存购物车之前，检查是否有空的购物车
+  if (cartItems.value.length === 0) {
+    // 如果该商家的购物车为空，删除该商家对应的 sessionStorage 数据
+    sessionStorage.removeItem(`cart_${props.mid}`);
+  } else {
+    // 否则保存购物车数据
+    sessionStorage.setItem(`cart_${props.mid}`, JSON.stringify(cartItems.value));
+  }
+  console.log("Cart saved", JSON.parse(sessionStorage.getItem(`cart_${props.mid}`) || '[]'));
 };
+
 const addToCart = (item: any) => {
   const existingItem = cartItems.value.find(cartItem => cartItem.id === item.id);
   if (existingItem) {
@@ -205,17 +213,17 @@ const getQuantity = (id: string) => {
 };
 </script>
 <style scoped>
-.inner-tab :deep(.el-tabs__item){
-  height:4em;
+.inner-tab :deep(.el-tabs__item) {
+  height: 4em;
   border: none;
 }
 
-.inner-tab :deep(.el-tabs__content){
-  padding:0;
+.inner-tab :deep(.el-tabs__content) {
+  padding: 0;
 }
-.outer-tab{
+
+.outer-tab {
   width: 100%;
   box-sizing: border-box;
 }
-
 </style>

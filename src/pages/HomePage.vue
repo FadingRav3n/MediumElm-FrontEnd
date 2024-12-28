@@ -1,7 +1,7 @@
 <template>
   <div class="w-screen h-screen bg-[#fffffd]">
     <header
-      class="w-full h-[4.5em] pos-fixed pos-left-none pos-top-none bg-[linear-gradient(180deg,lightblue,#f4f8fb,#fffffd)]">
+      class="w-full h-[4.5em] pos-fixed pos-left-none pos-top-none bg-[linear-gradient(180deg,dodgerblue,#f4f8fb,#fffffd)]">
       <div class="h-[2.5em] w-full flex justify-around items-center">
         <div class="w-[60%] flex justify-start items-center box-border p-l-[1em]">
           <h2 class="text-[#666] text-size-[1.2em]">常点</h2>
@@ -15,7 +15,7 @@
       <div class="w-full h-[2.5em] flex justify-center items-center">
         <div
           class="h-[2em] b-2 border-rd-[1em] border-solid b-blue bg-white m-l-[0.5em] m-r-[0.5em] flex justify-between w-full">
-          <div class="">
+          <div>
             <input type="text" class="border-rd-3em b-none h-90% w-100% ">
           </div>
           <div

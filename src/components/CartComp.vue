@@ -72,11 +72,6 @@ const openMask = () => {
   isMaskVisible.value = true;
 };
 
-// 关闭遮罩层
-const closeMask = () => {
-  isMaskVisible.value = false;
-};
-
 const submitOrder = ()=>{
   console.log("ok")
 }
