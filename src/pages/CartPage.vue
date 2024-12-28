@@ -25,16 +25,19 @@
     <div v-else class="flex justify-center items-center">
       <div v-for="(item, idx) in carts" :key="idx" class="w-full flex flex-col items-center shadow">
         <div class="w-full box-border pl-1em pr-1em pt-1em pb-0.5em">
-          <h3 class="text-1em">{{ item.name }}</h3>
+          <div class="w-full flex justify-between items-center">
+            <h3 class="text-1em">{{ item.name }}</h3>
+            <img src="../assets/icons/trash.svg" alt="" class="w-1.1em" @click="delFromCart(idx)">
+          </div>
         </div>
-        <div class="w-full h-full flex justify-center items-center flex-col">
+        <div class="w-full h-full flex justify-center items-center flex-col pb-1em">
           <div v-for="(item_,idx) in item.items " :key="idx" class="flex w-full">
             <img :src="item_.icon" alt="" class="w-5em b-rd-2em">
             <div class="flex justify-around flex-col w-full pr-1em">
               <h2 class="text-0.9em">{{ item_.name }}</h2>
               <div class="flex justify-between items-center w-full">
                 <h2 class="text-0.9em">￥{{(parseFloat(item_.cost) * item_.quantity).toFixed(2)}}</h2>
-                <h2 class="text-0.9em b-1px b-solid b-rd-5px b-#666 p-0.2em">x{{ item_.quantity }}</h2>
+                <h2 class="text-0.9em b-1px b-solid b-rd-5px b-#666 p-0.1em">x{{ item_.quantity }}</h2>
               </div>
             </div>
           </div>
@@ -63,6 +66,7 @@ import { useRouter } from 'vue-router';
 import FooterComp from '@/components/FooterComp.vue';
 import { onBeforeMount, ref } from 'vue';
 import { base_url } from '@/util/const';
+import { ArrowRight } from '@element-plus/icons-vue';
 const router = useRouter()
 const toSuperMarket = () => {
   router.push({
@@ -133,5 +137,11 @@ const getAllMerchantInfo = async () => {
 
   console.log('Merged Carts:', carts.value);
 };
+
+const delFromCart = async(id)=>{
+  console.log(id)
+  sessionStorage.removeItem(`${id}`)
+  await getAllMerchantInfo()
+}
 </script>
 <style scoped></style>
