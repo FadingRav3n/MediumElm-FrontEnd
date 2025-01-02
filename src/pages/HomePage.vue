@@ -8,7 +8,7 @@
           <h2 class="box-border p-[0.4em] text-size-[1em] font-100">|</h2>
           <h2 class="text-[#000] text-size-[1.2em]">推荐</h2>
         </div>
-        <div class="w-[50%] box-border pr-0.5em">
+        <div class="w-[60%] box-border pr-0.5em">
           <p class="text-size-[0.9em] flex justify-center items-center">云南大学呈贡校区楸苑<el-icon><i><ArrowDown></ArrowDown></i></el-icon> </p>
         </div>
       </div>
@@ -53,7 +53,7 @@
               <img src="../assets/icons/more.svg" alt="" class="w-0.8em">
             </div>
             <div class="flex justify-between">
-              <div class="flex">
+              <div class="flex mb-0.3em mt-0.2em">
                 <h3 class="text-orange text-0.8em mr-0.5em">{{ item.rate }}分</h3>
                 <p class="text-#333 text-0.8em">月售{{ item.soldout }}+</p>
               </div>

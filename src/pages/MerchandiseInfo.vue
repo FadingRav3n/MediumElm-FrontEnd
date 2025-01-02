@@ -78,7 +78,7 @@ onMounted(async () => {
 
 // 获取商品列表
 const getAllMerchandises = async () => {
-  await axios.get(base_url + '/api/merchandises').then((resp)=>{
+  await axios.get(base_url + '/api/merchandises/'+props.id).then((resp)=>{
     console.log(resp.data)
     merchandiseData.value = resp.data
   })
