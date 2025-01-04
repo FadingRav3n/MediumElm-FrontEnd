@@ -12,7 +12,7 @@
             </i></el-icon>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item>退出登录</el-dropdown-item>
+              <el-dropdown-item @click="startlogout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -122,6 +122,9 @@ import mg5 from '@/assets/icons/mg5.jpg';
 import mg6 from '@/assets/icons/mg6.jpg';
 import mg7 from '@/assets/icons/mg7.jpg';
 import mg8 from '@/assets/icons/mg8.jpg';
+import { logout } from '@/auth/auth';
+import { ElMessage } from 'element-plus';
+import router from '@/router';
 const userInfo = ref()
 const hdzx = [
   {
@@ -157,5 +160,24 @@ const hdzx = [
     icon: mg8
   }
 ]
+
+const startlogout = ()=>{
+  logout(()=>{
+    ElMessage({
+      message:'登出成功',
+      type:'success'
+    })
+    router.push({
+      name:'login'
+    })
+  },()=>{
+    ElMessage(
+      {
+        message:'登出失败',
+        type:'warning'
+      }
+    )
+  })
+}
 </script>
 <style scoped></style>

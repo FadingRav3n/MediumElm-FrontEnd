@@ -1,5 +1,5 @@
 import axios from "axios";
-import {ElMessage} from "element-plus";
+import { ElMessage } from "element-plus";
 
 const authItemName = "access_token"
 
@@ -13,7 +13,7 @@ const defaultFailure = (message, status, url) => {
   ElMessage.warning(message)
 }
 
-function takeAccessToken() {
+const takeAccessToken = () => {
   const str = localStorage.getItem(authItemName) || sessionStorage.getItem(authItemName);
   if (!str) return null
   const authObj = JSON.parse(str)
@@ -25,7 +25,7 @@ function takeAccessToken() {
   return authObj.token
 }
 
-function storeAccessToken(remember, token, expire, username, id, role) {
+const storeAccessToken = (remember, token, expire, username, id, role) => {
   const authObj = {
     token: token,
     expire: expire,
@@ -42,20 +42,20 @@ function storeAccessToken(remember, token, expire, username, id, role) {
     sessionStorage.setItem(authItemName, str)
 }
 
-function deleteAccessToken() {
+const deleteAccessToken = () => {
   localStorage.removeItem(authItemName)
   sessionStorage.removeItem(authItemName)
 }
 
-function accessHeader() {
+const accessHeader = () => {
   const token = takeAccessToken();
   return token ? {
     'Authorization': `Bearer ${takeAccessToken()}`
   } : {}
 }
 
-function internalPost(url, data, headers, success, failure, error = defaultError) {
-  axios.post(url, data, {headers: headers}).then(({data}) => {
+const internalPost = (url, data, headers, success, failure, error = defaultError) => {
+  axios.post(url, data, { headers: headers }).then(({ data }) => {
     if (data.code === 200)
       success(data.data)
     else
@@ -63,8 +63,8 @@ function internalPost(url, data, headers, success, failure, error = defaultError
   }).catch(err => error(err))
 }
 
-function internalGet(url, headers, success, failure, error = defaultError) {
-  axios.get(url, {headers: headers}).then(({data}) => {
+const internalGet = (url, headers, success, failure, error = defaultError) => {
+  axios.get(url, { headers: headers }).then(({ data }) => {
     if (data.code === 200)
       success(data.data)
     else
@@ -72,16 +72,16 @@ function internalGet(url, headers, success, failure, error = defaultError) {
   }).catch(err => error(err))
 }
 
-function get(url, success, failure = defaultFailure) {
+const get = (url, success, failure = defaultFailure) => {
   internalGet(url, accessHeader(), success, failure)
 }
 
-function post(url, data, success, failure = defaultFailure) {
+const post = (url, data, success, failure = defaultFailure) => {
   internalPost(url, data, accessHeader(), success, failure)
 }
 
-function login(username, password, remember, success, failure = defaultFailure) {
-  internalPost('http://localhost:8088/auth/login', {
+const login = (username, password, remember, success, failure = defaultFailure) => {
+  internalPost('http://localhost:8080/auth/login', {
     username: username,
     password: password
   }, {
@@ -94,16 +94,16 @@ function login(username, password, remember, success, failure = defaultFailure) 
   }, failure)
 }
 
-function logout(success, failure = defaultFailure) {
-  get('http://localhost:8088/auth/logout', () => {
+const logout = (success, failure = defaultFailure) => {
+  get('http://localhost:8080/auth/logout', () => {
     deleteAccessToken()
     ElMessage.success(`退出登录成功，欢迎您再次使用`)
     success()
   }, failure)
 }
 
-function unauthorized() {
+const unauthorized = () => {
   return !takeAccessToken()
 }
 
-export {login, logout, get, post, unauthorized}
+export { login, logout, get, post, unauthorized }

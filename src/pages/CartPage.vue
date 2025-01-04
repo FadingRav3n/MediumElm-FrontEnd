@@ -65,20 +65,16 @@
       <div class="bg-[linear-gradient(270deg,#ddd,#999)] w-20% h-2px ml-0.5em"></div>
     </div>
   </div>
-  <div class="fixed w-full bottom-0 left-0 bg-white h-3.5em mb-[3.5em] flex justify-between items-center">
+  <div class="fixed w-full bottom-0 left-0 bg-white h-3.5em mb-[3.5em] flex justify-between items-center"
+    v-if="selectedItems.length > 0">
     <div class="w-60% text-center text-1.1em font-semibold flex justify-start pl-1em box-border">
       <p class="">
         总价：￥{{ totalPrice.toFixed(2) }}
       </p>
     </div>
     <div class="w-15em h-full justify-end items-center flex box-border pr-1em">
-      <div class="w-60% text-center b-rd-2em h-70% flex justify-center items-center bg-blue"
-        v-if="selectedItems.length > 0">
+      <div class="w-60% text-center b-rd-2em h-70% flex justify-center items-center bg-blue" @click="toOrderConfirm">
         <h3 class="text-white text-1.1em">一键结算</h3>
-      </div>
-      <div class="w-60% text-center b-rd-2em h-70% flex justify-center items-center" v-else
-        style="background-color: #aaa;"> <!-- 如果没有选中的商品 -->
-        <h3 class="text-#666 text-1.1em">一键结算</h3>
       </div>
     </div>
   </div>
@@ -87,7 +83,7 @@
 <script lang="ts" setup>
 import { useRouter } from 'vue-router';
 import FooterComp from '@/components/FooterComp.vue';
-import { onBeforeMount, ref, watch, computed } from 'vue';
+import { onBeforeMount, ref, computed } from 'vue';
 import { base_url } from '@/util/const';
 const router = useRouter()
 const toSuperMarket = () => {
@@ -186,6 +182,15 @@ const totalPrice = computed(() => {
 
 const handleCheckedCartChange = (value: string[]) => {
   console.log(selectedItems.value)
+}
+
+const toOrderConfirm = ()=>{
+  router.push({
+    name:'order',
+    query: {
+      selectedItems: JSON.stringify(selectedItems.value)  // 将数组转换为字符串
+    }
+  })
 }
 </script>
 <style scoped></style>

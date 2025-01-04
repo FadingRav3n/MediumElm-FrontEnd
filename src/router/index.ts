@@ -7,9 +7,10 @@ import MePage from "@/pages/MePage.vue";
 import MerchaniseInfo from "@/pages/MerchandiseInfo.vue";
 import MerchantInfo from "@/pages/MerchantInfo.vue";
 import MessagePage from "@/pages/MessagePage.vue";
+import OrderPage from "@/pages/OrderPage.vue";
 import SupermarketPage from "@/pages/SupermarketPage.vue";
 import { createRouter, createWebHashHistory } from "vue-router";
-
+import { unauthorized } from "@/auth/auth";
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
@@ -69,8 +70,26 @@ const router = createRouter({
       name:'merchanise',
       component:MerchaniseInfo,
       props: route => ({ id:route.params.id})
+    },
+    {
+      path:'/order',
+      name:'order',
+      component:OrderPage
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  const isUnauthorized = unauthorized();
+  if (to.name === 'login' && !isUnauthorized) {
+    next('/home');
+    return;
+  }
+  if (isUnauthorized && to.name !== 'login') {
+    next('/login');
+    return;
+  }
+  next();
+});
 
 export default router
