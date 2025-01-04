@@ -9,27 +9,18 @@
           <h2 class="text-[#000] text-size-[1.2em]">推荐</h2>
         </div>
         <div class="w-[60%] box-border pr-0.5em">
-          <p class="text-size-[0.9em] flex justify-center items-center">云南大学呈贡校区楸苑<el-icon><i><ArrowDown></ArrowDown></i></el-icon> </p>
+          <p class="text-size-[0.9em] flex justify-center items-center">云南大学呈贡校区楸苑<el-icon><i>
+                <ArrowDown></ArrowDown>
+              </i></el-icon> </p>
         </div>
       </div>
-      <div class="w-full h-[2.5em] flex justify-center items-center">
-        <div
-          class="h-[2em] b-2 border-rd-[1em] border-solid b-blue bg-white m-l-[0.5em] m-r-[0.5em] flex justify-between w-full">
-          <div>
-            <input type="text" class="border-rd-3em b-none h-90% w-100% ">
-          </div>
-          <div
-            class="bg-blue border-rd-[1em] w-[4.5em] m-[3px] text-center text-white text-size-[0.8em] flex justify-center items-center">
-            <p>搜索</p>
-          </div>
-        </div>
-      </div>
+      <SearchComp></SearchComp>
     </header>
     <div class="w-full h-full mt-[5em]">
       <img src="../assets/home-banner.jpg" alt="" class="w-full">
       <div class="w-full flex flex-basis-5em flex-wrap">
         <div v-for="(item, idx) in categories" :key="idx"
-          class="w-20% h-4em flex justify-center items-center flex-col bg-#fffffd">
+          class="w-20% h-4em flex justify-center items-center flex-col bg-#fffffd" @click="changeToTagDetail(item.id)">
           <img :src="item.icon" alt="" class="h-2em w-2em">
           <p class="text-0.9em">{{ item.title }}</p>
         </div>
@@ -41,7 +32,8 @@
       </div>
       <div class="w-full box-border pl-1em pr-1em bg-[#f4fafb]">
         <div v-for="(item, idx) in merchantList" :key="idx"
-          class="w-100% h-9em border-rd-10px bg-white shadow-md box-border p-1em flex justify-center items-center mb-0.5em" @click="toMerchantInfo(item.id)">
+          class="w-100% h-9em border-rd-10px bg-white shadow-md box-border p-1em flex justify-center items-center mb-0.5em"
+          @click="toMerchantInfo(item.id)">
           <div class="w-38% h-100% flex justify-center items-center mr-0.5em">
             <img :src="item.icon" alt="" class="w-100%">
           </div>
@@ -72,95 +64,110 @@
           </div>
         </div>
       </div>
+      <div v-if="isLoading" class="text-center text-gray-500 text-0.5em h-3em">加载中...</div>
+      <div v-if="!hasMore" class="text-center text-gray-500 text-0.5em h-3em">没有更多数据了</div>
       <div class="w-full h-3.4em"></div>
     </div>
     <FooterComp></FooterComp>
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref,onUnmounted } from 'vue';
 import { ArrowDown } from '@element-plus/icons-vue';
 import FooterComp from '@/components/FooterComp.vue';
-import hbxc from '@/assets/icons/hbxc.jpg'
-import zfmd from '@/assets/icons/zfmd.jpg'
-import zlxc from '@/assets/icons/zlxc.jpg'
-import smcw from '@/assets/icons/smcw.jpg'
-import tpyp from '@/assets/icons/tpyp.jpg'
-import kfg from '@/assets/icons/kfg.jpg'
-import pzbh from '@/assets/icons/pzbh.jpg'
-import ygjz from '@/assets/icons/ygjz.jpg'
-import jcc from '@/assets/icons/jcc.jpg'
-import csbl from '@/assets/icons/csbl.jpg'
-import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { base_url } from '@/util/const';
-const categories = ref([
-  {
-    title: '汉堡西餐',
-    icon: hbxc
-  },
-  {
-    title: '超市便利',
-    icon: csbl
-  },
-  {
-    title: '粥粉面点',
-    icon: zfmd
-  },
-  {
-    title: '炸卤小吃',
-    icon: zlxc
-  },
-  {
-    title: '数码潮玩',
-    icon: smcw
-  },
-  {
-    title: '甜品饮品',
-    icon: tpyp
-  },
-  {
-    title: '咖啡馆',
-    icon: kfg
-  },
-  {
-    title: '品质百货',
-    icon: pzbh
-  },
-  {
-    title: '阳光酒庄',
-    icon: ygjz
-  },
-  {
-    title: '家常菜',
-    icon: jcc
-  },
-])
-
-const merchantList = ref()
-onMounted(async () => {
-  await getAllMechant()
-})
+import { get, getQuery } from '@/auth/auth';
+import SearchComp from '@/components/SearchComp.vue';
+const categories = ref([])
+const merchantList = ref([])
+const pageNum = ref(1);
+const pageSize = ref(2);
+const isLoading = ref(false);
+const hasMore = ref(true);
+let prev = 0
+const getAllCategories = async () => {
+  get(base_url + '/api/categories', (data) => {
+    categories.value = data;
+    console.log(data);
+  });
+};
 const getAllMechant = async () => {
-  axios.get(base_url+'/api/merchants', {
-    params: {
-      pageNum: 1,
-      pageSize: 2
+  if (isLoading.value || !hasMore.value) return;
+  isLoading.value = true;
+  getQuery(
+    base_url + '/api/merchants',
+    { pageNum: pageNum.value, pageSize: pageSize.value },
+    (data) => {
+      console.log(data)
+      if(prev!=data.pageNum){
+        if (data.list && data.list.length > 0) {
+          merchantList.value = [...merchantList.value, ...data.list];
+          pageNum.value++;
+          if(!data.hasNextPage){
+            hasMore.value = false;
+          }
+        } else {
+          hasMore.value = false;
+        }
+        prev=data.pageNum
+      }
     }
-  }).then((resp) => {
-    merchantList.value = resp.data.list
-    console.log(merchantList.value)
-  })
-}
+  );
+
+  isLoading.value = false;
+};
+
+const handleScroll = () => {
+  const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+  const windowHeight = document.documentElement.clientHeight;
+  const scrollHeight = document.documentElement.scrollHeight;
+
+  if (scrollTop + windowHeight >= scrollHeight - 10) {
+    getAllMechant();
+  }
+};
+
+
+// const getAllMechant = async () => {
+//   getQuery(base_url + '/api/merchants', {
+//     pageNum: 1,
+//     pageSize: 2
+//   },
+//     (data) => {
+//       console.log(data)
+//       merchantList.value = data.list
+//     }
+//   )
+// }
 
 const router = useRouter()
-const toMerchantInfo = (mid:string)=>{
+const toMerchantInfo = (mid: string) => {
   router.push({
-    name:'merchant',
-    params:{
-      mid:mid
+    name: 'merchant',
+    params: {
+      mid: mid
     }
   })
 }
+
+const changeToTagDetail = (val) => {
+  router.push({
+    name: 'tag',
+    params: {
+      id: val
+    }
+  })
+}
+
+onMounted(async () => {
+  await getAllMechant();
+  await getAllCategories();
+  window.addEventListener('scroll', handleScroll);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
+});
 </script>
 <style scoped></style>

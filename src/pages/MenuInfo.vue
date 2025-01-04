@@ -59,6 +59,7 @@ import { base_url } from '@/util/const';
 import axios from 'axios';
 import { ArrowLeft } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
+import { delete_, get, post } from '@/auth/auth';
 
 const props = defineProps({
   id: { type: String, required: true }
@@ -76,9 +77,9 @@ onMounted(async () => {
 });
 
 const getAllMenus = async () => {
-  await axios.get(base_url + '/api/menus/' + props.id).then((resp) => {
-    menuData.value = resp.data;
-  });
+  get(base_url + '/api/menus/' + props.id,(data)=>{
+    menuData.value = data;
+  })
 };
 
 const back = () => {
@@ -106,21 +107,18 @@ const openDetailDialog = (row: any) => {
 };
 
 const saveMenu = async () => {
-  await axios.post(base_url + '/api/menus', formData.value).then((resp) => {
-    console.log(resp.data);
-  });
+  post(base_url + '/api/menus', formData.value,(data)=>{
+    console.log(data)
+  })
   dialogVisible.value = false;
   await getAllMenus(); // 刷新菜单列表
 };
 
 // 删除菜单
 const deleteMenu = async (id: string) => {
-  try {
-    await axios.delete(base_url + '/api/menus/' + id);
-    await getAllMenus();
-  } catch (error) {
-    console.error(error);
-  }
+  delete_(base_url + '/api/menus/' + id,(data)=>{
+    console.log(data)
+  })
 };
 </script>
 

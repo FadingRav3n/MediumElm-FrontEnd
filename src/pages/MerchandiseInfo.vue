@@ -61,6 +61,7 @@ import { base_url } from '@/util/const';
 import axios from 'axios';
 import { ArrowLeft } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
+import { delete_, get, post, put } from '@/auth/auth';
 const props = defineProps({
   id: { type: String, required: true }
 });
@@ -78,10 +79,13 @@ onMounted(async () => {
 
 // 获取商品列表
 const getAllMerchandises = async () => {
-  await axios.get(base_url + '/api/merchandises/'+props.id).then((resp)=>{
-    console.log(resp.data)
-    merchandiseData.value = resp.data
+  get(base_url + '/api/merchandises/'+props.id,(data)=>{
+    merchandiseData.value = data
   })
+  // await axios.get(base_url + '/api/merchandises/'+props.id).then((resp)=>{
+  //   console.log(resp.data)
+  //   merchandiseData.value = resp.data
+  // })
 };
 
 // 返回到商家列表页面
@@ -108,24 +112,32 @@ const saveMerchanise = async () => {
   formData.value.menuId = props.id
   const url = formData.value.id ? base_url + '/api/merchandises/' + formData.value.id : base_url + '/api/merchandises';
   const method = formData.value.id ? 'put' : 'post';
-
-  try {
-    await axios({ method, url, data: formData.value });
+  if(method==='put'){
+    put(url,formData.value,(data)=>{
+      console.log(data)
+    })
     dialogVisible.value = false;
     await getAllMerchandises(); // 刷新商品列表
-  } catch (error) {
-    console.error(error);
+  }else{
+    post(url,formData.value,(data)=>{
+      console.log(data)
+    })
+    dialogVisible.value = false;
+    await getAllMerchandises(); // 刷新商品列表
   }
 };
 
 // 删除商品
 const deleteMerchanise = async (id: string) => {
-  try {
-    await axios.delete(base_url + '/api/merchandises/' + id);
-    await getAllMerchandises(); // 刷新商品列表
-  } catch (error) {
-    console.error(error);
-  }
+  delete_(base_url + '/api/merchandises/' + id,(data)=>{
+    console.log(data)
+  })
+  await getAllMerchandises(); // 刷新商品列表
+  // try {
+  //   await axios.delete(base_url + '/api/merchandises/' + id);
+  // } catch (error) {
+  //   console.error(error);
+  // }
 };
 </script>
 

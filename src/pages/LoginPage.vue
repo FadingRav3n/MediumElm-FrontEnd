@@ -26,7 +26,6 @@
 </template>
 <script lang="ts" setup>
 import { login } from '@/auth/auth';
-import { ElMessage } from 'element-plus';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -35,17 +34,8 @@ const password = ref('')
 const router = useRouter()
 const startlogin = ()=>{
   login(username.value,password.value,false,()=>{
-    ElMessage({
-      message:'登陆成功',
-      type:'success'
-    })
     router.push({
       name:'home'
-    })
-  },()=>{
-    ElMessage({
-      message:'登录失败',
-      type:'error'
     })
   })
 }

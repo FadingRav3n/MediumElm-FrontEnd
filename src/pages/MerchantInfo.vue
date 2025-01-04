@@ -26,25 +26,25 @@
         <div class="border-rd-1em shadow-md h-8em w-full box-border p-1em bg-white">
           <div class="flex justify-between">
             <div class="w-60%">
-              <h2 class="text-1.3em mb-0.3em">{{ merchantInfo.name }}</h2>
+              <h2 class="text-1.3em mb-0.3em">{{ merchantInfo?.name }}</h2>
               <div class="flex justify-start">
                 <div class="w-4em">
                   <p class="text-0.8em text-#666">评分</p>
-                  <h3 class="text-0.8em">{{ merchantInfo.rate }}</h3>
+                  <h3 class="text-0.8em">{{ merchantInfo?.rate }}</h3>
                 </div>
                 <div class="w-4em">
                   <p class="text-0.8em text-#666">月售</p>
-                  <h3 class="text-0.8em">{{ merchantInfo.soldout }}</h3>
+                  <h3 class="text-0.8em">{{ merchantInfo?.soldout }}</h3>
                 </div>
                 <div class="w-5em">
                   <p class="text-0.8em text-#666">蜂鸟准时达</p>
-                  <h3 class="text-0.8em">{{ merchantInfo.distance }}km
+                  <h3 class="text-0.8em">{{ merchantInfo?.distance }}km
                   </h3>
                 </div>
               </div>
             </div>
             <div class="w-30% flex justify-end">
-              <img :src="merchantInfo.banner" alt="" class="w-4em h-4em">
+              <img :src="merchantInfo?.banner" alt="" class="w-4em h-4em">
             </div>
           </div>
         </div>
@@ -59,15 +59,15 @@
                 <div v-for="(item_, idx) in merchaniseData" :key="idx"
                   class="w-full h-6em flex justify-around items-center shadow">
                   <div class="w-35% h-full flex justify-center items-center">
-                    <img :src="item_.icon" alt="" class="w-full">
+                    <img :src="item_?.icon" alt="" class="w-full">
                   </div>
                   <div class="w-65% h-full box-border pt-0.5em">
-                    <h3 class="text-1em">{{ item_.name }}</h3>
-                    <p class="text-#666 text-0.8em box-border pt-1em">已售{{ item_.soldout }}</p>
+                    <h3 class="text-1em">{{ item_?.name }}</h3>
+                    <p class="text-#666 text-0.8em box-border pt-1em">已售{{ item_?.soldout }}</p>
                     <div class="flex w-full justify-between items-center">
                       <div class="flex justify-center items-center">
                         <h3 class="text-0.7em text-red">￥</h3>
-                        <h2 class="text-0.9em text-red">{{ item_.cost }}</h2>
+                        <h2 class="text-0.9em text-red">{{ item_?.cost }}</h2>
                       </div>
                       <div v-if="!cartItems.some(cartItem => cartItem.id === item_.id)">
                         <div class="box-border pr-1em z-10" @click="addToCart(item_)">
@@ -97,12 +97,12 @@
         </el-tab-pane>
         <el-tab-pane label="评价" name="second"></el-tab-pane>
         <el-tab-pane label="商家" name="third">
-          {{ merchantInfo.address }}
+          {{ merchantInfo?.address }}
         </el-tab-pane>
       </el-tabs>
     </div>
-    <CartComp :cartItems="cartItems" :deliveryFee="merchantInfo.deliveryFee" :deliveryStart="merchantInfo.deliveryStart"
-      :merchantId="merchantInfo.id"></CartComp>
+    <CartComp :cartItems="cartItems" :deliveryFee="merchantInfo?.deliveryFee" :deliveryStart="merchantInfo?.deliveryStart"
+      :merchantId="merchantInfo?.id"></CartComp>
   </div>
 </template>
 <script lang="ts" setup>
@@ -111,22 +111,20 @@ import { ArrowLeft, Search, Message, Star, More, Plus, Minus } from '@element-pl
 import axios from 'axios';
 import { onBeforeMount, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import type { TabsInstance } from 'element-plus'
+import { ElMessage, type TabsInstance } from 'element-plus'
 import CartComp from '@/components/CartComp.vue';
+import { getQuery,get } from '@/auth/auth';
 const tabPosition = ref<TabsInstance['tabPosition']>('left')
 const merchandiseactiveName = ref('')
-onBeforeMount(async () => {
+onMounted(async () => {
   await getMerchantInfo()
   console.log(merchantInfo.value)
   await getMenus()
-  console.log(menuInfo.value)
+  console.log('menuinfo',menuInfo.value)
   merchandiseactiveName.value = menuInfo.value[0].id
   console.log(merchandiseactiveName.value)
   await fetchMerchandises(merchandiseactiveName.value);
   console.log(merchaniseData.value)
-})
-onMounted(async () => {
-
 })
 const activeName = ref('first')
 
@@ -137,17 +135,22 @@ const merchaniseData = ref()
 
 const merchantInfo = ref()
 const getMerchantInfo = async () => {
-  await axios.get(base_url + `/api/merchants/${props.mid}`).then((resp) => {
-    console.log(resp.data)
-    merchantInfo.value = resp.data
-  })
+  get(base_url+`/api/merchants/${props.mid}`,
+    (data)=>{
+      console.log(data)
+      merchantInfo.value = data
+    }
+  )
+  // await axios.get(base_url + `/api/merchants/${props.mid}`).then((resp) => {
+  //   console.log(resp.data)
+  //   merchantInfo.value = resp.data
+  // })
 }
 
 const menuInfo = ref()
 const getMenus = async () => {
-  await axios.get(base_url + `/api/menus/${props.mid}`).then((resp) => {
-    console.log(resp.data)
-    menuInfo.value = resp.data
+  get(base_url + `/api/menus/${props.mid}`,(data)=>{
+    menuInfo.value = data
   })
 }
 
@@ -157,8 +160,8 @@ const back = () => {
 }
 const fetchMerchandises = async (id: string) => {
   console.log(id)
-  await axios.get(base_url + `/api/merchandises/${id}`).then((resp) => {
-    merchaniseData.value = resp.data
+  get(base_url + `/api/merchandises/${id}`,(data)=>{
+    merchaniseData.value = data
   })
 }
 

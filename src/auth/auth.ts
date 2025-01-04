@@ -72,12 +72,50 @@ const internalGet = (url, headers, success, failure, error = defaultError) => {
   }).catch(err => error(err))
 }
 
+const internalGetWithQuery = (url, query, headers, success, failure, error = defaultError) => {
+  axios.get(url, { headers: headers, params: query }).then(({ data }) => {
+    if (data.code === 200)
+      success(data.data)
+    else
+      failure(data.message, data.code, url)
+  }).catch(err => error(err))
+}
+
 const get = (url, success, failure = defaultFailure) => {
   internalGet(url, accessHeader(), success, failure)
 }
 
+const getQuery = (url, query, success, failure = defaultFailure) => {
+  internalGetWithQuery(url, query, accessHeader(), success, failure)
+}
+
 const post = (url, data, success, failure = defaultFailure) => {
   internalPost(url, data, accessHeader(), success, failure)
+}
+
+const internalPut = (url, data, headers, success, failure, error = defaultError) => {
+  axios.put(url, data, { headers: headers }).then(({ data }) => {
+    if (data.code === 200)
+      success(data.data)
+    else
+      failure(data.message, data.code, url)
+  }).catch(err => error(err))
+}
+
+const put = (url, data, success, failure = defaultFailure) => {
+  internalPut(url, data, accessHeader(), success, failure)
+}
+
+const internalDelete = (url, headers, success, failure, error = defaultError) => {
+  axios.delete(url, { headers: headers }).then(({ data }) => {
+    if (data.code === 200)
+      success(data.data)
+    else
+      failure(data.message, data.code, url)
+  }).catch(err => error(err))
+}
+const delete_ = (url, success, failure = defaultFailure) => {
+  internalDelete(url, accessHeader(), success, failure)
 }
 
 const login = (username, password, remember, success, failure = defaultFailure) => {
@@ -106,4 +144,4 @@ const unauthorized = () => {
   return !takeAccessToken()
 }
 
-export { login, logout, get, post, unauthorized }
+export { login, logout, get, post, unauthorized ,getQuery,put,delete_}

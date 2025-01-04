@@ -11,6 +11,7 @@ import OrderPage from "@/pages/OrderPage.vue";
 import SupermarketPage from "@/pages/SupermarketPage.vue";
 import { createRouter, createWebHashHistory } from "vue-router";
 import { unauthorized } from "@/auth/auth";
+import TagInfo from "@/pages/TagInfo.vue";
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
@@ -75,7 +76,13 @@ const router = createRouter({
       path:'/order',
       name:'order',
       component:OrderPage
-    }
+    },
+    {
+      path:'/tag/:id',
+      name:'tag',
+      component:TagInfo,
+      props: route => ({ id:route.params.id})
+    },
   ]
 })
 

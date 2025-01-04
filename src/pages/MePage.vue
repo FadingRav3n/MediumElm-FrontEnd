@@ -167,6 +167,7 @@ const startlogout = ()=>{
       message:'登出成功',
       type:'success'
     })
+    sessionStorage.clear();
     router.push({
       name:'login'
     })

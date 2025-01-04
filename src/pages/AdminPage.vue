@@ -115,6 +115,7 @@ import { ref, onMounted } from 'vue';
 import { base_url } from '@/util/const';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import { delete_, getQuery, post, put } from '@/auth/auth';
 
 // 数据和状态
 const tableData = ref<any[]>([]);
@@ -130,17 +131,12 @@ onMounted(async () => {
 
 // 获取商家列表
 const getAllMerchants = async () => {
-  try {
-    const response = await axios.get(base_url + '/api/merchants', {
-      params: {
-        pageNum: 1,
-        pageSize: 100
-      }
-    });
-    tableData.value = response.data.list;
-  } catch (error) {
-    console.error(error);
-  }
+  getQuery(base_url + '/api/merchants',{
+    pageNum: 1,
+    pageSize: 100
+  },(data)=>{
+    tableData.value = data.list;
+  })
 };
 
 // 新增商家
@@ -158,25 +154,31 @@ const openEditDialog = (row: any) => {
 // 保存商家（新增/编辑）
 const saveMerchant = async () => {
   console.log(formData.value)
-  await axios.post(base_url + '/api/merchants', formData.value).then((resp) => {
-    console.log(resp.data)
+  post(base_url + '/api/merchants',formData.value,(data)=>{
+    console.log(data)
   })
   dialogVisible.value = false;
   await getAllMerchants(); // 刷新商家列表
 };
 
 const modifyMerchant = async()=>{
-  await axios.put(base_url+'/api/merchants/'+formData.value.id,formData.value).then((resp)=>{
-    console.log(resp.data)
+  put(base_url+'/api/merchants/'+formData.value.id,formData.value,(data)=>{
+    console.log(data)
   })
+  // await axios.put(base_url+'/api/merchants/'+formData.value.id,formData.value).then((resp)=>{
+  //   console.log(resp.data)
+  // })
   modifydialogVisible.value = false
   await getAllMerchants()
 }
 // 删除商家
 const deleteMerchant = async (id: number) => {
-  await axios.delete(base_url + '/api/merchants/' + id).then((resp)=>{
-    console.log(resp.data)
-  });
+  delete_(base_url + '/api/merchants/' + id,(data)=>{
+    console.log(data)
+  })
+  // await axios.delete(base_url + '/api/merchants/' + id).then((resp)=>{
+  //   console.log(resp.data)
+  // });
   await getAllMerchants(); // 刷新商家列表
 };
 
