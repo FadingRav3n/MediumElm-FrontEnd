@@ -111,7 +111,7 @@ const getCartsFromSession = () => {
   }
   return carts;
 };
-import axios from 'axios';
+import { get } from '@/auth/auth';
 // 存储商家购物车信息
 const carts = ref(getCartsFromSession());
 console.log(carts.value)
@@ -129,31 +129,22 @@ const getAllMerchantInfo = async () => {
   for (const merchantId in allCarts) {
     const cart = allCarts[merchantId]; // 获取当前商家的购物车数据
     console.log('Cart Data:', cart);
-
-    try {
-      // 假设商家信息通过 merchantId 获取（这里我们去掉 'cart_' 前缀）
-      const response = await axios.get(`${base_url}/api/merchants/${merchantId.substring(5)}`);
-      const merchantInfo = response.data;
-
-      // 提取商品数据并转换为数组
+    const merchantInfo = ref()
+    get(`${base_url}/api/merchants/${merchantId.substring(5)}`,(data)=>{
+      console.log('data',data)
+      merchantInfo.value = data
+      console.log('data1',merchantInfo.value)
       const items = Object.entries(cart).filter(([key]) => !['name', 'distance'].includes(key)) // 排除掉非商品信息字段
         .map(([key, item]) => item); // 提取商品信息
-
-      // 合并商家信息与购物车数据
       cartsWithDetails[merchantId] = {
-        name: merchantInfo.name,
-        distance: merchantInfo.distance,
+        name: merchantInfo.value.name,
+        distance: merchantInfo.value.distance,
         items: items
       };
-    } catch (error) {
-      console.error('获取商家信息失败', error);
-    }
+      carts.value = cartsWithDetails;
+      console.log('Merged Carts:', carts.value);
+    })
   }
-
-  // 将合并后的购物车数据保存到 carts 中
-  carts.value = cartsWithDetails;
-
-  console.log('Merged Carts:', carts.value);
 };
 
 const delFromCart = async (id) => {
@@ -186,9 +177,9 @@ const handleCheckedCartChange = (value: string[]) => {
 
 const toOrderConfirm = ()=>{
   router.push({
-    name:'order',
-    query: {
-      selectedItems: JSON.stringify(selectedItems.value)  // 将数组转换为字符串
+    name:'merchant',
+    params:{
+      mid: selectedItems.value[0].substring(5)
     }
   })
 }

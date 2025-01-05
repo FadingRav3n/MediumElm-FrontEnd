@@ -5,7 +5,7 @@
         <div @click="back()" class="w-1.5em">
           <el-icon><i><ArrowLeft></ArrowLeft></i></el-icon>
         </div>
-        <h2>{{ baseInfo?.title }}</h2>
+        <h2 class="text-1.3em">{{ baseInfo?.title }}</h2>
       </div>
       <div class="pr-0.5em">
         <el-icon><i><More></More></i></el-icon>
@@ -36,10 +36,23 @@
                 </p>
               </div>
             </div>
-            <div class="flex justify-between">
+            <div class="flex justify-between mb-0.3em">
               <p class="text-#333 text-0.7em">起送￥{{ item.deliveryStart }}</p>
               <div class="text-blue text-0.7em b-blue b-1px b-solid b-rd-0.3em">
                 蜂鸟准时达
+              </div>
+            </div>
+            <div class="flex flex-wrap">
+              <div v-for="(activity,idx) in item.activities" :key="idx" class="mr-0.3em">
+                <div v-if="activity.priority==0" class="b-1px b-#666 b-solid b-rd-5px text-0.3em text-#666 p-0.3em">
+                  {{ activity.description }}
+                </div>
+                <div v-if="activity.priority==1" class="b-1px b-red b-solid b-rd-5px text-0.3em text-red p-0.3em">
+                  {{ activity.description }}
+                </div>
+                <div v-if="activity.priority==2" class="b-1px b-#d1c7ab b-solid b-rd-5px text-0.3em text-#ceb187 p-0.3em">
+                  {{ activity.description }}
+                </div>
               </div>
             </div>
           </div>

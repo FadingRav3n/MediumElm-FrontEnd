@@ -102,29 +102,23 @@
       </el-tabs>
     </div>
     <CartComp :cartItems="cartItems" :deliveryFee="merchantInfo?.deliveryFee" :deliveryStart="merchantInfo?.deliveryStart"
-      :merchantId="merchantInfo?.id"></CartComp>
+      :merchantId="merchantInfo?.id" :merchantName="merchantInfo?.name" @update-cart="handleUpdateCart"></CartComp>
   </div>
 </template>
 <script lang="ts" setup>
 import { base_url } from '@/util/const';
 import { ArrowLeft, Search, Message, Star, More, Plus, Minus } from '@element-plus/icons-vue';
-import axios from 'axios';
-import { onBeforeMount, onMounted, ref, watch } from 'vue';
+import {  onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { ElMessage, type TabsInstance } from 'element-plus'
+import { type TabsInstance } from 'element-plus'
 import CartComp from '@/components/CartComp.vue';
-import { getQuery,get } from '@/auth/auth';
+import { get } from '@/auth/auth';
 const tabPosition = ref<TabsInstance['tabPosition']>('left')
 const merchandiseactiveName = ref('')
 onMounted(async () => {
   await getMerchantInfo()
   console.log(merchantInfo.value)
   await getMenus()
-  console.log('menuinfo',menuInfo.value)
-  merchandiseactiveName.value = menuInfo.value[0].id
-  console.log(merchandiseactiveName.value)
-  await fetchMerchandises(merchandiseactiveName.value);
-  console.log(merchaniseData.value)
 })
 const activeName = ref('first')
 
@@ -141,16 +135,17 @@ const getMerchantInfo = async () => {
       merchantInfo.value = data
     }
   )
-  // await axios.get(base_url + `/api/merchants/${props.mid}`).then((resp) => {
-  //   console.log(resp.data)
-  //   merchantInfo.value = resp.data
-  // })
 }
 
 const menuInfo = ref()
 const getMenus = async () => {
   get(base_url + `/api/menus/${props.mid}`,(data)=>{
+    console.log('mda',data)
     menuInfo.value = data
+    if(data.length>0){
+      merchandiseactiveName.value = data[0].id
+      fetchMerchandises(merchandiseactiveName.value);
+    }
   })
 }
 
@@ -213,6 +208,10 @@ const delFromCart = (item: any) => {
 const getQuantity = (id: string) => {
   const item = cartItems.value.find(item => item.id === id);
   return item ? item.quantity : 0; // 如果找不到商品，则返回 0
+};
+
+const handleUpdateCart = (newCartItems: any[]) => {
+  cartItems.value = JSON.parse(sessionStorage.getItem(`cart_${props.mid}`) || '[]')
 };
 </script>
 <style scoped>

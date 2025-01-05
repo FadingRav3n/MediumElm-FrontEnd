@@ -55,10 +55,23 @@
                 </p>
               </div>
             </div>
-            <div class="flex justify-between">
+            <div class="flex justify-between mb-0.5em">
               <p class="text-#333 text-0.7em">起送￥{{ item.deliveryStart }}</p>
               <div class="text-blue text-0.7em b-blue b-1px b-solid b-rd-0.3em">
                 蜂鸟准时达
+              </div>
+            </div>
+            <div class="flex flex-wrap">
+              <div v-for="(activity,idx) in item.activities" :key="idx" class="mr-0.3em">
+                <div v-if="activity.priority==0" class="b-1px b-#666 b-solid b-rd-5px text-0.3em text-#666 p-0.3em">
+                  {{ activity.description }}
+                </div>
+                <div v-if="activity.priority==1" class="b-1px b-red b-solid b-rd-5px text-0.3em text-red p-0.3em">
+                  {{ activity.description }}
+                </div>
+                <div v-if="activity.priority==2" class="b-1px b-#d1c7ab b-solid b-rd-5px text-0.3em text-#ceb187 p-0.3em">
+                  {{ activity.description }}
+                </div>
               </div>
             </div>
           </div>
@@ -101,8 +114,22 @@ const getAllMechant = async () => {
     (data) => {
       console.log(data)
       if(prev!=data.pageNum){
+        prev=data.pageNum
         if (data.list && data.list.length > 0) {
-          merchantList.value = [...merchantList.value, ...data.list];
+          for(let i=0;i<data.list.length;i++){
+            get(base_url+'/api/activities/'+data.list[i].id,(data1)=>{
+              get(base_url+'/api/merchants/soldout/'+data.list[i].id,(data2)=>{
+                const merchantVO = {
+                  ...data.list[i],// 商家详细信息
+                  soldout: data2,
+                  activities: data1?data1:[], // 商家相关的活动
+                };
+                console.log(merchantVO)
+                merchantList.value = [...merchantList.value, merchantVO];
+              })
+            })
+          }
+          // merchantList.value = [...merchantList.value, ...data.list];
           pageNum.value++;
           if(!data.hasNextPage){
             hasMore.value = false;
@@ -114,7 +141,7 @@ const getAllMechant = async () => {
       }
     }
   );
-
+  console.log('allMerchant',merchantList.value)
   isLoading.value = false;
 };
 

@@ -7,11 +7,11 @@ import MePage from "@/pages/MePage.vue";
 import MerchaniseInfo from "@/pages/MerchandiseInfo.vue";
 import MerchantInfo from "@/pages/MerchantInfo.vue";
 import MessagePage from "@/pages/MessagePage.vue";
-import OrderPage from "@/pages/OrderPage.vue";
 import SupermarketPage from "@/pages/SupermarketPage.vue";
 import { createRouter, createWebHashHistory } from "vue-router";
 import { unauthorized } from "@/auth/auth";
 import TagInfo from "@/pages/TagInfo.vue";
+import AllOrders from "@/pages/AllOrders.vue";
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
@@ -73,16 +73,16 @@ const router = createRouter({
       props: route => ({ id:route.params.id})
     },
     {
-      path:'/order',
-      name:'order',
-      component:OrderPage
-    },
-    {
       path:'/tag/:id',
       name:'tag',
       component:TagInfo,
       props: route => ({ id:route.params.id})
     },
+    {
+      path:'/all_order',
+      name:'all_order',
+      component:AllOrders
+    }
   ]
 })
 
@@ -95,6 +95,10 @@ router.beforeEach((to, from, next) => {
   if (isUnauthorized && to.name !== 'login') {
     next('/login');
     return;
+  }
+  if((to.name==='admin' || to.name==='menu' || to.name==='merchandise') && sessionStorage.getItem('cur_user_role')=='user'){
+    next('/home')
+    return
   }
   next();
 });
