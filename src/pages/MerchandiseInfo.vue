@@ -17,7 +17,6 @@
       <el-table-column prop="name" label="商品名" />
       <el-table-column prop="cost" label="成本" />
       <el-table-column prop="rate" label="评分" />
-      <el-table-column prop="discount" label="折扣" />
       <el-table-column prop="icon" label="icon" />
       <el-table-column label="操作" width="220">
         <template #default="{ row }">
@@ -39,9 +38,6 @@
         <el-form-item label="评分">
           <el-input v-model="formData.rate" type="number" />
         </el-form-item>
-        <el-form-item label="折扣">
-          <el-input v-model="formData.discount" type="number" />
-        </el-form-item>
         <el-form-item label="icon">
           <el-input v-model="formData.icon" type="string" />
         </el-form-item>
@@ -58,7 +54,6 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import { base_url } from '@/util/const';
-import axios from 'axios';
 import { ArrowLeft } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
 import { delete_, get, post, put } from '@/auth/auth';

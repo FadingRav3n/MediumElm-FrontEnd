@@ -50,7 +50,7 @@
         </div>
       </div>
     </header>
-    <div class="outer-tab">
+    <div class="pl-0.5em pr-0.5em">
       <el-tabs v-model="activeName">
         <el-tab-pane label="点餐" name="first">
           <div class="inner-tab">

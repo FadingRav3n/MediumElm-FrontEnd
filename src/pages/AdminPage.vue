@@ -36,9 +36,6 @@
         <el-form-item label="Rate">
           <el-input v-model="formData.rate" />
         </el-form-item>
-        <el-form-item label="Soldout">
-          <el-input v-model="formData.soldout" />
-        </el-form-item>
         <el-form-item label="Distance">
           <el-input v-model="formData.distance" />
         </el-form-item>
@@ -69,9 +66,6 @@
         <el-form-item label="Rate">
           <el-input v-model="formData.rate" />
         </el-form-item>
-        <el-form-item label="Soldout">
-          <el-input v-model="formData.soldout" />
-        </el-form-item>
         <el-form-item label="Distance">
           <el-input v-model="formData.distance" />
         </el-form-item>
@@ -94,7 +88,6 @@
           <el-col :span="6"><strong>Name:</strong> {{ detailsData.name }}</el-col>
           <el-col :span="6"><strong>Rate:</strong> {{ detailsData.rate }}</el-col>
           <el-col :span="6"><strong>Distance:</strong> {{ detailsData.distance }}</el-col>
-          <el-col :span="6"><strong>Soldout:</strong> {{ detailsData.soldout }}</el-col>
         </el-row>
         <el-row :gutter="20" style="margin-top: 20px;">
           <el-col :span="12"><strong>Icon:</strong> <img :src="detailsData.icon" alt="icon"
@@ -113,7 +106,6 @@
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
 import { base_url } from '@/util/const';
-import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { delete_, getQuery, post, put } from '@/auth/auth';
 
@@ -165,9 +157,7 @@ const modifyMerchant = async()=>{
   put(base_url+'/api/merchants/'+formData.value.id,formData.value,(data)=>{
     console.log(data)
   })
-  // await axios.put(base_url+'/api/merchants/'+formData.value.id,formData.value).then((resp)=>{
-  //   console.log(resp.data)
-  // })
+
   modifydialogVisible.value = false
   await getAllMerchants()
 }
@@ -176,9 +166,6 @@ const deleteMerchant = async (id: number) => {
   delete_(base_url + '/api/merchants/' + id,(data)=>{
     console.log(data)
   })
-  // await axios.delete(base_url + '/api/merchants/' + id).then((resp)=>{
-  //   console.log(resp.data)
-  // });
   await getAllMerchants(); // 刷新商家列表
 };
 

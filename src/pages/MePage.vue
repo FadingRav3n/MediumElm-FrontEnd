@@ -171,10 +171,6 @@ const hdzx = [
 
 const startlogout = () => {
   logout(() => {
-    ElMessage({
-      message: '登出成功',
-      type: 'success'
-    })
     sessionStorage.clear();
     router.push({
       name: 'login'

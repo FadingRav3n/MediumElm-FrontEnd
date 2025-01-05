@@ -86,8 +86,8 @@
               <div class="flex justify-between w-full items-center pb-1em pl-1em pr-1em box-border">
                 <h3 class="text-1em pr-1em">总价：￥{{ item.total }}</h3>
                 <div v-if="item.status == 0">
-                  <el-button>取消</el-button>
-                  <el-button>支付</el-button>
+                  <el-button @click="cancel(item.id)">取消</el-button>
+                  <el-button @click="pay(item.id, item.total)" type=primary>支付</el-button>
                 </div>
               </div>
             </div>
@@ -126,8 +126,8 @@
               <div class="flex justify-between w-full items-center pb-1em pl-1em pr-1em box-border">
                 <h3 class="text-1em pr-1em">总价：￥{{ item.total }}</h3>
                 <div v-if="item.status == 0">
-                  <el-button>取消</el-button>
-                  <el-button>支付</el-button>
+                  <el-button @click="cancel(item.id)">取消</el-button>
+                  <el-button @click="pay(item.id, item.total)" type=primary>支付</el-button>
                 </div>
               </div>
             </div>
@@ -167,8 +167,8 @@
               <div class="flex justify-between w-full items-center pb-1em pl-1em pr-1em box-border">
                 <h3 class="text-1em pr-1em">总价：￥{{ item.total }}</h3>
                 <div v-if="item.status == 0">
-                  <el-button>取消</el-button>
-                  <el-button>支付</el-button>
+                  <el-button @click="cancel(item.id)">取消</el-button>
+                  <el-button @click="pay(item.id, item.total)" type=primary>支付</el-button>
                 </div>
               </div>
             </div>
