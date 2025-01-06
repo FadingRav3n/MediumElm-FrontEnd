@@ -8,7 +8,6 @@
       <el-table-column prop="deliveryFee" label="Delivery Fee" />
       <el-table-column prop="deliveryStart" label="Delivery Start" />
       <el-table-column prop="rate" label="Rate" />
-      <el-table-column prop="soldout" label="Soldout" />
       <el-table-column prop="distance" label="Distance" />
       <el-table-column prop="icon" label="Icon" />
       <el-table-column prop="banner" label="Banner" />

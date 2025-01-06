@@ -3,19 +3,20 @@
     <div class="flex justify-end flex-col items-center h-35vh">
       <img src="../assets/login-banner.png" alt="" class="w-70%">
     </div>
-    <div class="w-full pl-2em pr-2em box-border" v-if="active===0">
+    <div class="w-full pl-2em pr-2em box-border" v-if="active === 0">
       <el-form class="h-30vh">
         <el-input placeholder="请输入手机号" v-model="username" class="mb-0.3em"></el-input>
         <el-input type="password" placeholder="请输入密码" v-model="password"></el-input>
         <div class="flex justify-between items-center">
           <div class="text-0.3em h-13em w-full flex justify-start items-center text-gray">
-            <p @click="active=1">注册</p>
+            <p @click="active = 1">注册</p>
           </div>
           <div class="text-0.3em h-13em w-full flex justify-end items-center text-gray">
             <p>忘记密码？</p>
           </div>
         </div>
-        <div class="w-full flex justify-center items-center mb-1em h-3em b-rd-2em bg-blue-3 text-white" @click="startlogin">
+        <div class="w-full flex justify-center items-center mb-1em h-3em b-rd-2em bg-blue-3 text-white"
+          @click="startlogin">
           <h3>立即登录</h3>
         </div>
         <div class="flex">
@@ -34,13 +35,14 @@
         <el-input type="password" placeholder="请再次输入密码" v-model="password_repeat"></el-input>
         <div class="flex justify-between items-center">
           <div class="text-0.3em h-13em w-full flex justify-start items-center text-gray">
-            <p @click="active=0">登录</p>
+            <p @click="active = 0">登录</p>
           </div>
           <div class="text-0.3em h-13em w-full flex justify-end items-center text-gray">
             <p>忘记密码？</p>
           </div>
         </div>
-        <div class="w-full flex justify-center items-center mb-1em h-3em b-rd-2em bg-blue-3 text-white" @click="startlogin">
+        <div class="w-full flex justify-center items-center mb-1em h-3em b-rd-2em bg-blue-3 text-white"
+          @click="register">
           <h3>立即注册</h3>
         </div>
         <div class="flex">
@@ -55,7 +57,9 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { login } from '@/auth/auth';
+import { login, post } from '@/auth/auth';
+import { base_url } from '@/util/const';
+import { ElMessage } from 'element-plus';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 const active = ref(0)
@@ -63,35 +67,60 @@ const username = ref('')
 const password = ref('')
 const password_repeat = ref('')
 const router = useRouter()
-const startlogin = ()=>{
-  login(username.value,password.value,false,(data)=>{
+const startlogin = () => {
+  login(username.value, password.value, false, (data) => {
     console.log(data)
-    sessionStorage.setItem('cur_user',data.username)
-    sessionStorage.setItem('cur_user_role',data.role)
-    if(data.role=='user'){
+    sessionStorage.setItem('cur_user', data.username)
+    sessionStorage.setItem('cur_user_role', data.role)
+    if (data.role == 'user') {
       router.push({
-        name:'home'
+        name: 'home'
       })
-    }else{
+    } else {
       router.push({
-        name:'admin'
+        name: 'admin'
       })
     }
   })
 }
+
+const register = () => {
+  if (password.value != password_repeat.value) {
+    ElMessage({
+      message: '两次输入密码不一致',
+      type: 'warning'
+    })
+    return
+  }
+  const phonePattern = /^1[3-9]\d{9}$/; // 正则表达式，检查手机号格式
+  if (!phonePattern.test(username.value)) {
+    ElMessage({
+      message: '请输入有效的 11 位手机号',
+      type: 'warning'
+    })
+    return
+  }
+  post(base_url + '/auth/register', { username: username.value, password: password.value }, (data) => {
+    console.log(data)
+    startlogin()
+  })
+}
 </script>
 <style scoped>
-:deep(.el-input){
+:deep(.el-input) {
   height: 4em;
   border-radius: 1em;
 }
-:deep(.el-input__wrapper){
+
+:deep(.el-input__wrapper) {
   padding: 0.1em;
 }
-:deep(.el-input__inner){
+
+:deep(.el-input__inner) {
   height: 95%;
 }
-:deep(.el-radio){
+
+:deep(.el-radio) {
   margin: 0;
 }
 </style>
